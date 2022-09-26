@@ -19,6 +19,16 @@ body {
   height: 300px;
 }
  
+.logo {
+  text-align: center;
+  padding: 10px;
+  background-color: #ffe4c4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
 .app {
   height: 100%;
   display: flex;
@@ -68,7 +78,7 @@ code {
   padding: 10px 20px;
   margin-right: 4px;
   margin-left: 4px;
-  background-color: bisque;
+  background-color: #ffe4c4;
   font-size: 16px;
   cursor: pointer;
   border-radius: 4px;
