@@ -102,7 +102,7 @@ const counterSpeedStorage = {
 };
 
 // Init
-window.onload = function () {
+window.addEventListener('load', (event) => {
   // Important Constants
   const SpeedyControl = new SpeedyControlClass();
   const SpeedyVideo = document.querySelector('video');
@@ -216,4 +216,4 @@ window.onload = function () {
     sendResponse({});
     return true;
   });
-};
+});
