@@ -181,3 +181,19 @@ function restoreSpeedCounter() {
 }
 
 document.addEventListener('DOMContentLoaded', restoreSpeedCounter);
+
+// Reset Button
+document.getElementById('reset').addEventListener('click', () => {
+  counterVolumeStorage.set(100, () => {
+    setupVolumeCounter(100);
+  });
+  updateVolumeCounter({
+    type: 'RESET',
+  });
+  counterSpeedStorage.set(1, () => {
+    setupSpeedCounter(1);
+  });
+  updateSpeedCounter({
+    type: 'RESET',
+  });
+});

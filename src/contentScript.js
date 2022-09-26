@@ -5,6 +5,10 @@ class SpeedyControlClass {
   constructor() {
     // Get all videos
     this.video = document.querySelector('video');
+
+    // Init
+    this.volume = 1;
+    this.speed = 1;
   }
 
   // Resume
@@ -25,7 +29,6 @@ class SpeedyControlClass {
     this.gainNode = this.audioContext.createGain();
 
     // Default Value
-    this.volume = 1;
     this.volumeChange();
   }
 
@@ -60,24 +63,119 @@ class SpeedyControlClass {
   }
 }
 
+// Get init values - Volume
+const counterVolumeStorage = {
+  get: (cb) => {
+    chrome.storage.sync.get(['count'], (result) => {
+      cb(result.count);
+    });
+  },
+  set: (value, cb) => {
+    chrome.storage.sync.set(
+      {
+        count: value,
+      },
+      () => {
+        cb();
+      },
+    );
+  },
+};
+
+// Get init values - Speed
+const counterSpeedStorage = {
+  get: (cb) => {
+    chrome.storage.sync.get(['speed'], (result) => {
+      cb(result.speed);
+    });
+  },
+  set: (value, cb) => {
+    chrome.storage.sync.set(
+      {
+        speed: value,
+      },
+      () => {
+        cb();
+      },
+    );
+  },
+};
+
+// Init
 window.onload = function () {
-  // Init
+  // Important Constants
   const SpeedyControl = new SpeedyControlClass();
   const SpeedyVideo = document.querySelector('video');
+  const { body } = document;
+
+  if (SpeedyVideo === undefined || SpeedyVideo === null) return false;
+  if (body === undefined || body === null) return false;
 
   // Add init to the body
   // https://goo.gl/7K7WLu
-  document.body.addEventListener('click', () => {
-    if (SpeedyVideo === undefined || SpeedyVideo === null) return false;
-
-    const { body } = document;
-    if (body !== undefined && body !== null) {
-      if (!document.body.classList.contains('speedy-init')) {
+  if (SpeedyVideo.paused === false) {
+    if (!document.body.classList.contains('speedy-init')) {
+      // Volume Init
+      counterVolumeStorage.get((count) => {
+        if (typeof count === 'undefined') {
+          // Set counter value as 100
+          counterVolumeStorage.set(100, () => {
+            SpeedyControl.initVolume(100);
+          });
+        } else {
+          SpeedyControl.initVolume(count);
+        }
         SpeedyControl.resumeVol();
-      }
+      });
+
+      // Speed Init
+      counterSpeedStorage.get((speed) => {
+        if (typeof speed === 'undefined') {
+          // Set counter value as 1
+          counterSpeedStorage.set(1, () => {
+            SpeedyControl.initSpeed(1);
+          });
+        } else {
+          SpeedyControl.initSpeed(speed);
+        }
+        SpeedyControl.speedChange();
+      });
+
       body.classList.add('speedy-init');
     }
-  });
+  } else {
+    document.body.addEventListener('click', () => {
+      if (!document.body.classList.contains('speedy-init')) {
+        // Volume Init
+        counterVolumeStorage.get((count) => {
+          if (typeof count === 'undefined') {
+            // Set counter value as 100
+            counterVolumeStorage.set(100, () => {
+              SpeedyControl.initVolume(100);
+            });
+          } else {
+            SpeedyControl.initVolume(count);
+          }
+          SpeedyControl.resumeVol();
+        });
+
+        // Speed Init
+        counterSpeedStorage.get((speed) => {
+          if (typeof speed === 'undefined') {
+            // Set counter value as 1
+            counterSpeedStorage.set(1, () => {
+              SpeedyControl.initSpeed(1);
+            });
+          } else {
+            SpeedyControl.initSpeed(speed);
+          }
+          SpeedyControl.speedChange();
+        });
+
+        body.classList.add('speedy-init');
+      }
+    });
+  }
 
   // Listen for message
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
