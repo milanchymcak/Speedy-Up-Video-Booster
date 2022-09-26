@@ -1,112 +1,183 @@
-'use strict';
+/* global chrome */
 
 import './popup.css';
 
-(function () {
-  // We will make use of Storage API to get and store `count` value
-  // More information on Storage API can we found at
-  // https://developer.chrome.com/extensions/storage
-
-  // To get storage access, we have to mention it in `permissions` property of manifest.json file
-  // More information on Permissions can we found at
-  // https://developer.chrome.com/extensions/declare_permissions
-  const counterStorage = {
-    get: (cb) => {
-      chrome.storage.sync.get(['count'], (result) => {
-        cb(result.count);
-      });
-    },
-    set: (value, cb) => {
-      chrome.storage.sync.set(
-        {
-          count: value,
-        },
-        () => {
-          cb();
-        }
-      );
-    },
-  };
-
-  function setupCounter(initialValue = 0) {
-    document.getElementById('counter').innerHTML = initialValue;
-
-    document.getElementById('incrementBtn').addEventListener('click', () => {
-      updateCounter({
-        type: 'INCREMENT',
-      });
+/// /
+// Volume Component
+//
+/// /
+const counterVolumeStorage = {
+  get: (cb) => {
+    chrome.storage.sync.get(['count'], (result) => {
+      cb(result.count);
     });
-
-    document.getElementById('decrementBtn').addEventListener('click', () => {
-      updateCounter({
-        type: 'DECREMENT',
-      });
-    });
-  }
-
-  function updateCounter({ type }) {
-    counterStorage.get((count) => {
-      let newCount;
-
-      if (type === 'INCREMENT') {
-        newCount = count + 1;
-      } else if (type === 'DECREMENT') {
-        newCount = count - 1;
-      } else {
-        newCount = count;
-      }
-
-      counterStorage.set(newCount, () => {
-        document.getElementById('counter').innerHTML = newCount;
-
-        // Communicate with content script of
-        // active tab by sending a message
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          const tab = tabs[0];
-
-          chrome.tabs.sendMessage(
-            tab.id,
-            {
-              type: 'COUNT',
-              payload: {
-                count: newCount,
-              },
-            },
-            (response) => {
-              console.log('Current count value passed to contentScript file');
-            }
-          );
-        });
-      });
-    });
-  }
-
-  function restoreCounter() {
-    // Restore count value
-    counterStorage.get((count) => {
-      if (typeof count === 'undefined') {
-        // Set counter value as 0
-        counterStorage.set(0, () => {
-          setupCounter(0);
-        });
-      } else {
-        setupCounter(count);
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', restoreCounter);
-
-  // Communicate with background file by sending a message
-  chrome.runtime.sendMessage(
-    {
-      type: 'GREETINGS',
-      payload: {
-        message: 'Hello, my name is Pop. I am from Popup.',
+  },
+  set: (value, cb) => {
+    chrome.storage.sync.set(
+      {
+        count: value,
       },
-    },
-    (response) => {
-      console.log(response.message);
+      () => {
+        cb();
+      },
+    );
+  },
+};
+
+function updateVolumeCounter({ type }) {
+  counterVolumeStorage.get((count) => {
+    let newCount;
+
+    document.getElementById('volume').innerHTML = `${count}%`;
+
+    if (type === 'INCREMENT') {
+      newCount = count + 20;
+    } else if (type === 'DECREMENT') {
+      newCount = count - 20;
+    } else {
+      newCount = count;
     }
-  );
-})();
+    if (newCount < 0) newCount = 0;
+
+    counterVolumeStorage.set(newCount, () => {
+      document.getElementById('volume').innerHTML = `${newCount}%`;
+
+      // Communicate with content script of
+      // active tab by sending a message
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+
+        chrome.tabs.sendMessage(
+          tab.id,
+          {
+            volume: type,
+            type: 'Volume',
+            count: newCount,
+          },
+        );
+      });
+    });
+  });
+}
+
+function setupVolumeCounter(initialValue = 100) {
+  document.getElementById('volume').innerHTML = `${initialValue}%`;
+
+  document.getElementById('incrementBtn').addEventListener('click', () => {
+    updateVolumeCounter({
+      type: 'INCREMENT',
+    });
+  });
+
+  document.getElementById('decrementBtn').addEventListener('click', () => {
+    updateVolumeCounter({
+      type: 'DECREMENT',
+    });
+  });
+}
+
+function restoreVolumeCounter() {
+  // Restore count value
+  counterVolumeStorage.get((count) => {
+    if (typeof count === 'undefined') {
+      // Set counter value as 100
+      counterVolumeStorage.set(100, () => {
+        setupVolumeCounter(100);
+      });
+    } else {
+      setupVolumeCounter(count);
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', restoreVolumeCounter);
+
+/// /
+// Speed Component
+//
+/// /
+const counterSpeedStorage = {
+  get: (cb) => {
+    chrome.storage.sync.get(['speed'], (result) => {
+      cb(result.speed);
+    });
+  },
+  set: (value, cb) => {
+    chrome.storage.sync.set(
+      {
+        speed: value,
+      },
+      () => {
+        cb();
+      },
+    );
+  },
+};
+
+function updateSpeedCounter({ type }) {
+  counterSpeedStorage.get((count) => {
+    let newCount;
+    document.getElementById('speed').innerHTML = `${count.toFixed(1)}x`;
+
+    if (type === 'INCREMENT') {
+      newCount = count + 0.1;
+    } else if (type === 'DECREMENT') {
+      newCount = count - 0.1;
+    } else {
+      newCount = count;
+    }
+
+    if (newCount < 0.1) newCount = 0.1;
+
+    counterSpeedStorage.set(newCount, () => {
+      document.getElementById('speed').innerHTML = `${newCount.toFixed(1)}x`;
+
+      // Communicate with content script of
+      // active tab by sending a message
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+
+        chrome.tabs.sendMessage(
+          tab.id,
+          {
+            volume: type,
+            type: 'Speed',
+            speed: newCount,
+          },
+        );
+      });
+    });
+  });
+}
+
+function setupSpeedCounter(initialValue = 1) {
+  document.getElementById('speed').innerHTML = `${initialValue.toFixed(1)}x`;
+
+  document.getElementById('incrementSpeedBtn').addEventListener('click', () => {
+    updateSpeedCounter({
+      type: 'INCREMENT',
+    });
+  });
+
+  document.getElementById('decrementSpeedBtn').addEventListener('click', () => {
+    updateSpeedCounter({
+      type: 'DECREMENT',
+    });
+  });
+}
+
+function restoreSpeedCounter() {
+  // Restore count value
+  counterSpeedStorage.get((speed) => {
+    if (typeof speed === 'undefined') {
+      // Set counter value as 1
+      counterSpeedStorage.set(1, () => {
+        setupSpeedCounter(1);
+      });
+    } else {
+      setupSpeedCounter(speed);
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', restoreSpeedCounter);

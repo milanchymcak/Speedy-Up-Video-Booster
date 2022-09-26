@@ -13,12 +13,12 @@ html {
     sans-serif;
   color: #222;
 }
-
+ 
 body {
   width: 350px;
   height: 300px;
 }
-
+ 
 .app {
   height: 100%;
   display: flex;
@@ -26,7 +26,8 @@ body {
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  padding: 20px;
+  padding: 30px;
+  box-sizing: content-box;
 }
 
 .title {

@@ -6,11 +6,22 @@
   "scripts": {
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
     "build": "webpack --mode=production --config config/webpack.config.js",
-    "format": "prettier --write --ignore-unknown \"{config,public,src}/**/*.{html,css,js,ts,json}\""
+    "format": "prettier --write --ignore-unknown \"{config,public,src}/**/*.{html,css,js,ts,json}\"",
+    "lint:css": "eslint --plugin eslint-plugin-css . --ext .css --ext .scss",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint --fix .",
+    "lint:pkg-json": "npmPkgJsonLint ."
   },
   "devDependencies": {
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.7.1",
+    "eslint": "^8.24.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-css": "^0.6.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react": "^7.31.8",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "file-loader": "^6.2.0",
     "mini-css-extract-plugin": "^2.6.1",
     "prettier": "^2.7.1",
