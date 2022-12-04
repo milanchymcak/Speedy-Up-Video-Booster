@@ -1,19 +1,20 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Speedy Up! - Video Booster (Google Chrome Extension)
+# <img src="public/icons/icon_48.png" width="45" align="left"> Speedy Up! - Video Booster
+**(Google Chrome Extension)**  
 
 ## Features
-### Unlimited Volume
+#### Unlimited Volume
 Go beyond your browser/computer max volume settings and listen to your favorite music, movie, or any video at for example 1000% volume.
 
-### Unlimited Speed 
+#### Unlimited Speed 
 2x, 4x or 50x speed? All possible.
 
-### Global Settings
+#### Global Settings
 Settings will remain active even if you go to another video or if you switch websites.
 
-## Install
+### Install
 
 **Chrome** extension - Currently pending review on the Google Chrome web store.
 
-## Contribution
+### Contribution
 
-Suggestions and pull requests are welcomed!.
+Suggestions and pull requests are welcomed!
